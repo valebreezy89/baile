@@ -5,11 +5,11 @@ class EncoderTest(unittest.TestCase):
         #this statement should go clear if mencoder dependency is satisfied
         self.encoder = Encoder()
         self.listener = TestListsner()
-        self.encoder.addListener(self.listener)
+        self.encoder.add_listener(self.listener)
     def testSimpleOnePass(self):
         self.listener.reset()
-        settings = dict(vcodec="copy", acodec="pcm") #copy video as is, encode audio to PCM
-        self.encoder.encode("../test_data/small.ogg","../test_data/results/small.ogg", settings)
+        settings = "-ovc lavc -lavcopts vcodec=mpeg4 -oac copy -vf scale=320:-2".split(" ")
+        self.encoder.encode("../test_data/small.ogg","../test_data/results/small_mpeg4.avi", settings)
         self.assertTrue(self.listener.isStarted)
         self.assertTrue(self.listener.isFinished)
         self.assertTrue(len(self.listener.progresses) > 0)
@@ -27,6 +27,7 @@ class TestListsner(EncoderListener):
         self.isFinished = False
     def progress(self, progress):
         self.progresses.append(progress)
+        print progress
     def stage(self, stage):
         self.stages.append(stage)
     def started(self):
